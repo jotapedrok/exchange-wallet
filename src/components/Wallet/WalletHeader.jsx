@@ -35,7 +35,12 @@ WalletHeader.propTypes = {
 
 const mapStateToProps = (state) => ({
   email: state.user.email,
-  expenses: state.wallet.expenses.reduce((acc, curr) => acc + Number(curr.valor), 0),
+  expenses: state.wallet.expenses.reduce((acc, curr) => {
+    const { currency, value, exchangeRates } = curr;
+    const cota = exchangeRates[currency].ask;
+    const brl = Number(value) * Number(cota);
+    return (acc + brl);
+  }, 0),
 });
 
 export default connect(mapStateToProps)(WalletHeader);

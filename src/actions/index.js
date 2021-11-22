@@ -2,6 +2,7 @@ import fetchApi from '../services/fetchApi';
 
 export const INPUT_EMAIL = 'INPUT_EMAIL';
 export const SAVE_EXPENDITURE = 'SAVE_EXPENDITURE';
+export const SAVE_CURRENCIES = 'SAVE_CURRENCIES';
 
 export const saveEmail = (payload) => (
   {
@@ -18,10 +19,28 @@ export const addExpenditure = (payload, currentCurrency) => (
   }
 );
 
+export const addCurrencies = (currencies) => (
+  {
+    type: SAVE_CURRENCIES,
+    currencies,
+  }
+);
+
 export const getCurrentCurr = (payload) => async (dispatch) => {
   try {
     const currentCurrency = await fetchApi();
     dispatch(addExpenditure(payload, currentCurrency));
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+
+export const getCurrencies = () => async (dispatch) => {
+  try {
+    const result = await fetchApi();
+    const currencies = [...Object.keys(result)];
+    currencies.splice(currencies.indexOf('USDT'), 1);
+    dispatch(addCurrencies(currencies));
   } catch (e) {
     console.log(e.message);
   }

@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getCurrentCurr } from '../../actions';
+import { getCurrencies, getCurrentCurr } from '../../actions';
 
 class FormExpenditure extends Component {
   constructor(props) {
     super(props);
 
     const INITIAL_STATE = {
-      valor: '',
-      descrição: '',
-      moeda: '',
-      metodo: ' ',
-      categoria: ' ',
+      value: '',
+      description: '',
+      currency: ' ',
+      method: ' ',
+      tag: ' ',
       id: 0,
     };
 
@@ -21,6 +21,13 @@ class FormExpenditure extends Component {
     this.inputRender = this.inputRender.bind(this);
     this.addButton = this.addButton.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.selectRender = this.selectRender.bind(this);
+    this.optionsReturn = this.optionsReturn.bind(this);
+  }
+
+  componentDidMount() {
+    const { saveCurrencies } = this.props;
+    saveCurrencies();
   }
 
   handleChange({ target }) {
@@ -47,14 +54,47 @@ class FormExpenditure extends Component {
     );
   }
 
+  optionsReturn(type) {
+    const { currencies } = this.props;
+    if (type === 'method') {
+      return ['Dinheiro', 'Cartão de crédito', 'Cartão de débito'];
+    }
+    if (type === 'tag') {
+      return ['Alimentação', 'Lazer', 'Trabalho', 'Transporte', 'Saúde'];
+    }
+    if (type === 'currency' && currencies) {
+      return [...currencies];
+    }
+    return ['error', 'notFound'];
+  }
+
+  selectRender(id, text, name, value) {
+    const array = this.optionsReturn(name);
+    return (
+      <label htmlFor={ id }>
+        { text }
+        <select
+          id={ id }
+          data-testid={ id }
+          name={ name }
+          onChange={ this.handleChange }
+          value={ value }
+        >
+          <option> </option>
+          {array.map((e, i) => <option key={ i }>{e}</option>)}
+        </select>
+      </label>
+    );
+  }
+
   addButton(e) {
     const { id } = this.state;
     const RETURN_STATE = {
-      valor: '',
-      descrição: '',
-      moeda: '',
-      metodo: ' ',
-      categoria: ' ',
+      value: '',
+      description: '',
+      currency: '',
+      method: ' ',
+      tag: ' ',
       id: Number([id]) + 1,
     };
     const { saveExpenditure } = this.props;
@@ -64,45 +104,15 @@ class FormExpenditure extends Component {
   }
 
   render() {
-    const { metodo, categoria } = this.state;
+    const { metodo, categoria, moeda } = this.state;
     return (
       <section>
         <form>
-          {this.inputRender('text', 'value-input', 'valor', 'Valor:')}
-          {this.inputRender('text', 'description-input', 'descrição', 'Descrição:')}
-          {this.inputRender('text', 'currency-input', 'moeda', 'Moeda:')}
-          <label htmlFor="method-input">
-            Método de pagamento:
-            <select
-              id="method-input"
-              data-testid="method-input"
-              name="metodo"
-              onChange={ this.handleChange }
-              value={ metodo }
-            >
-              <option> </option>
-              <option>Dinheiro</option>
-              <option>Cartão de crédito</option>
-              <option>Cartão de débito</option>
-            </select>
-          </label>
-          <label htmlFor="tag-input">
-            Categoria:
-            <select
-              id="tag-input"
-              data-testid="tag-input"
-              name="categoria"
-              onChange={ this.handleChange }
-              value={ categoria }
-            >
-              <option> </option>
-              <option>Alimentação</option>
-              <option>Lazer</option>
-              <option>Trabalho</option>
-              <option>Transporte</option>
-              <option>Saúde</option>
-            </select>
-          </label>
+          {this.inputRender('text', 'value-input', 'value', 'Valor:')}
+          {this.inputRender('text', 'description-input', 'description', 'Descrição:')}
+          {this.selectRender('currency-input', 'Moeda:', 'currency', moeda)}
+          {this.selectRender('method-input', 'Método de pagamento:', 'method', metodo)}
+          {this.selectRender('tag-input', 'Categoria:', 'tag', categoria)}
           <button
             type="button"
             onClick={ this.addButton }
@@ -117,10 +127,17 @@ class FormExpenditure extends Component {
 
 const mapDipatchToProps = (dispatch) => ({
   saveExpenditure: (payload) => dispatch(getCurrentCurr(payload)),
+  saveCurrencies: () => dispatch(getCurrencies()),
+});
+
+const mapStateToProps = (state) => ({
+  currencies: state.wallet.currencies,
 });
 
 FormExpenditure.propTypes = {
   saveExpenditure: PropTypes.func.isRequired,
+  saveCurrencies: PropTypes.func.isRequired,
+  currencies: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default connect(null, mapDipatchToProps)(FormExpenditure);
+export default connect(mapStateToProps, mapDipatchToProps)(FormExpenditure);
