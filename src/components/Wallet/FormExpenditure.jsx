@@ -80,8 +80,7 @@ class FormExpenditure extends Component {
           onChange={ this.handleChange }
           value={ value }
         >
-          <option> </option>
-          {array.map((e, i) => <option key={ i }>{e}</option>)}
+          {array.map((e, i) => <option data-testid={ e } key={ i }>{e}</option>)}
         </select>
       </label>
     );

@@ -195,7 +195,7 @@ describe('4 - Desenvolva um formulário para adicionar uma despesa contendo as s
 });
 
 describe('5 - Implemente a lógica para preencher as opções do campo "Moedas", buscando as siglas das moedas da API', () => {
-  test.skip('O campo para selecionar em qual moeda será registrada a despesa tem as opções corretas', async () => {
+  test('O campo para selecionar em qual moeda será registrada a despesa tem as opções corretas', async () => {
     renderWithRouterAndStore(<Wallet />, '/carteira');
     const currencyInput = await screen.findByRole('combobox', {
       name: /moeda/i,
