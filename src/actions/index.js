@@ -4,6 +4,8 @@ export const INPUT_EMAIL = 'INPUT_EMAIL';
 export const SAVE_EXPENDITURE = 'SAVE_EXPENDITURE';
 export const SAVE_CURRENCIES = 'SAVE_CURRENCIES';
 export const REMOVE_EXPENDITURE = 'REMOVE_EXPENDITURE';
+export const START_EDITING = 'START_EDITING';
+export const END_EDITING = 'END_EDITING';
 
 export const saveEmail = (payload) => (
   {
@@ -53,3 +55,13 @@ export const getCurrencies = () => async (dispatch) => {
     console.log(e.message);
   }
 };
+
+export const startEditing = (payload) => ({
+  type: START_EDITING,
+  payload,
+});
+
+export const endEditing = (payload) => ({
+  type: END_EDITING,
+  payload,
+});

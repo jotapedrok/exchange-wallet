@@ -1,8 +1,15 @@
-import { REMOVE_EXPENDITURE, SAVE_CURRENCIES, SAVE_EXPENDITURE } from '../actions';
+import { END_EDITING,
+  REMOVE_EXPENDITURE,
+  SAVE_CURRENCIES,
+  SAVE_EXPENDITURE,
+  START_EDITING,
+} from '../actions';
 
 const INITIAL_STATE = {
   currencies: [],
   expenses: [],
+  isEditing: false,
+  editing: {},
 };
 
 export default function wallet(state = INITIAL_STATE, action) {
@@ -23,6 +30,18 @@ export default function wallet(state = INITIAL_STATE, action) {
     return {
       ...state,
       currencies: [...action.currencies],
+    };
+  case START_EDITING:
+    return {
+      ...state,
+      isEditing: true,
+      editing: action.payload,
+    };
+  case END_EDITING:
+    return {
+      ...state,
+      isEditing: false,
+      expenses: action.payload,
     };
   default:
     return state;

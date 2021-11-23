@@ -1,33 +1,30 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getCurrencies, getCurrentCurr } from '../../actions';
+import PropTypes from 'prop-types';
+import { endEditing } from '../../actions';
 
 const ALIMENTAÇÃO = 'Alimentação';
-class FormExpenditure extends Component {
+
+class FormEditing extends Component {
   constructor(props) {
     super(props);
 
+    const { value, description, currency, method, tag, id } = props.editing;
     const INITIAL_STATE = {
-      value: '',
-      description: '',
-      currency: 'USD',
-      method: 'Dinheiro',
-      tag: ALIMENTAÇÃO,
-      id: 0,
+      value,
+      description,
+      currency,
+      method,
+      tag,
+      id,
     };
-
     this.state = INITIAL_STATE;
-    this.inputRender = this.inputRender.bind(this);
-    this.addButton = this.addButton.bind(this);
+
     this.handleChange = this.handleChange.bind(this);
     this.selectRender = this.selectRender.bind(this);
     this.optionsReturn = this.optionsReturn.bind(this);
-  }
-
-  componentDidMount() {
-    const { saveCurrencies } = this.props;
-    saveCurrencies();
+    this.inputRender = this.inputRender.bind(this);
+    this.saveChanges = this.saveChanges.bind(this);
   }
 
   handleChange({ target }) {
@@ -80,26 +77,24 @@ class FormExpenditure extends Component {
           onChange={ this.handleChange }
           value={ value }
         >
-          {array.map((e, i) => <option data-testid={ e } key={ i }>{e}</option>)}
+          {array.map((e, i) => <option key={ i }>{e}</option>)}
         </select>
       </label>
     );
   }
 
-  addButton(e) {
-    const { id } = this.state;
-    const RETURN_STATE = {
-      value: '',
-      description: '',
-      currency: 'USD',
-      method: 'Dinheiro',
-      tag: ALIMENTAÇÃO,
-      id: Number([id]) + 1,
-    };
-    const { saveExpenditure } = this.props;
+  saveChanges(e) {
     e.preventDefault();
-    saveExpenditure(this.state);
-    this.setState(RETURN_STATE);
+    const { value, description, currency, method, tag, id } = this.state;
+    const { expenses, finish } = this.props;
+    const newExpenses = [...expenses];
+    const editingObj = newExpenses.find((expense) => expense.id === id);
+    editingObj.value = value;
+    editingObj.description = description;
+    editingObj.currency = currency;
+    editingObj.method = method;
+    editingObj.tag = tag;
+    finish(newExpenses);
   }
 
   render() {
@@ -114,9 +109,9 @@ class FormExpenditure extends Component {
           {this.selectRender('tag-input', 'Categoria:', 'tag', categoria)}
           <button
             type="button"
-            onClick={ this.addButton }
+            onClick={ this.saveChanges }
           >
-            Adicionar despesa
+            Editar despesa
           </button>
         </form>
       </section>
@@ -124,19 +119,29 @@ class FormExpenditure extends Component {
   }
 }
 
-const mapDipatchToProps = (dispatch) => ({
-  saveExpenditure: (payload) => dispatch(getCurrentCurr(payload)),
-  saveCurrencies: () => dispatch(getCurrencies()),
-});
-
 const mapStateToProps = (state) => ({
   currencies: state.wallet.currencies,
+  expenses: state.wallet.expenses,
+  isEditing: state.wallet.isEditing,
+  editing: state.wallet.editing,
 });
 
-FormExpenditure.propTypes = {
-  saveExpenditure: PropTypes.func.isRequired,
-  saveCurrencies: PropTypes.func.isRequired,
+const mapDispatchToProps = (dispatch) => ({
+  finish: (payload) => dispatch(endEditing(payload)),
+});
+
+FormEditing.propTypes = {
   currencies: PropTypes.arrayOf(PropTypes.string).isRequired,
+  editing: PropTypes.shape({
+    value: PropTypes.string,
+    description: PropTypes.string,
+    currency: PropTypes.string,
+    method: PropTypes.string,
+    tag: PropTypes.string,
+    id: PropTypes.number,
+  }).isRequired,
+  expenses: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  finish: PropTypes.func.isRequired,
 };
 
-export default connect(mapStateToProps, mapDipatchToProps)(FormExpenditure);
+export default connect(mapStateToProps, mapDispatchToProps)(FormEditing);

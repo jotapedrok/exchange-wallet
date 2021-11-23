@@ -1,13 +1,27 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { removeExpenditure } from '../../actions';
+import { removeExpenditure, startEditing } from '../../actions';
+import Button from './Button';
+import TableHead from './TableHead';
 
 class ExpenditureTable extends Component {
   constructor(props) {
     super(props);
 
     this.deleteButton = this.deleteButton.bind(this);
+    this.editButton = this.editButton.bind(this);
+  }
+
+  editButton(e) {
+    e.preventDefault();
+    const { expenses, clickEdit } = this.props;
+    const { target } = e;
+    const line = target.parentNode.parentNode;
+    const num = line.className;
+    console.log(num);
+    const editObj = expenses.find((expense) => expense.id === Number(num));
+    clickEdit({ ...editObj });
   }
 
   deleteButton(e) {
@@ -25,17 +39,7 @@ class ExpenditureTable extends Component {
     return (
       <table>
         <thead>
-          <tr>
-            <th>Valor convertido</th>
-            <th>Descrição</th>
-            <th>Moeda</th>
-            <th>Câmbio utilizado</th>
-            <th>Valor</th>
-            <th>Moeda de conversão</th>
-            <th>Método de pagamento</th>
-            <th>Tag</th>
-            <th>Editar/Excluir</th>
-          </tr>
+          <TableHead />
         </thead>
         <tbody>
           {expenses !== [] && expenses.map((e) => {
@@ -51,13 +55,16 @@ class ExpenditureTable extends Component {
                   <td>{e.method}</td>
                   <td>{e.tag}</td>
                   <th>
-                    <button
-                      type="button"
-                      data-testid="delete-btn"
-                      onClick={ this.deleteButton }
-                    >
-                      Excluir
-                    </button>
+                    <Button
+                      clickFunc={ this.editButton }
+                      testId="edit-btn"
+                      text="Editar"
+                    />
+                    <Button
+                      clickFunc={ this.deleteButton }
+                      testId="delete-btn"
+                      text="Excluir"
+                    />
                   </th>
                 </tr>
               );
@@ -76,11 +83,13 @@ const mapStateToProps = (state) => ({
 
 const mapDipatchToProps = (dispatch) => ({
   removeOneExpenditure: (payload) => dispatch(removeExpenditure(payload)),
+  clickEdit: (payload) => dispatch(startEditing(payload)),
 });
 
 ExpenditureTable.propTypes = {
   expenses: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   removeOneExpenditure: PropTypes.func.isRequired,
+  clickEdit: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, mapDipatchToProps)(ExpenditureTable);
