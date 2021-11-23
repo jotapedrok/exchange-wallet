@@ -16,7 +16,7 @@ class WalletHeader extends Component {
         <p
           data-testid="total-field"
         >
-          {expenses}
+          {expenses.toFixed(2)}
         </p>
         <p
           data-testid="header-currency-field"

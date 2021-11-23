@@ -19,7 +19,6 @@ class ExpenditureTable extends Component {
     const { target } = e;
     const line = target.parentNode.parentNode;
     const num = line.className;
-    console.log(num);
     const editObj = expenses.find((expense) => expense.id === Number(num));
     clickEdit({ ...editObj });
   }
@@ -35,7 +34,7 @@ class ExpenditureTable extends Component {
   }
 
   render() {
-    const { expenses } = this.props;
+    const { expenses, isEditing } = this.props;
     return (
       <table>
         <thead>
@@ -55,11 +54,11 @@ class ExpenditureTable extends Component {
                   <td>{e.method}</td>
                   <td>{e.tag}</td>
                   <th>
-                    <Button
+                    { !isEditing && <Button
                       clickFunc={ this.editButton }
                       testId="edit-btn"
                       text="Editar"
-                    />
+                    /> }
                     <Button
                       clickFunc={ this.deleteButton }
                       testId="delete-btn"
@@ -79,6 +78,7 @@ class ExpenditureTable extends Component {
 
 const mapStateToProps = (state) => ({
   expenses: state.wallet.expenses,
+  isEditing: state.wallet.isEditing,
 });
 
 const mapDipatchToProps = (dispatch) => ({
@@ -90,6 +90,11 @@ ExpenditureTable.propTypes = {
   expenses: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   removeOneExpenditure: PropTypes.func.isRequired,
   clickEdit: PropTypes.func.isRequired,
+  isEditing: PropTypes.bool,
+};
+
+ExpenditureTable.defaultProps = {
+  isEditing: false,
 };
 
 export default connect(mapStateToProps, mapDipatchToProps)(ExpenditureTable);
