@@ -1,4 +1,4 @@
-import { SAVE_CURRENCIES, SAVE_EXPENDITURE } from '../actions';
+import { REMOVE_EXPENDITURE, SAVE_CURRENCIES, SAVE_EXPENDITURE } from '../actions';
 
 const INITIAL_STATE = {
   currencies: [],
@@ -13,6 +13,11 @@ export default function wallet(state = INITIAL_STATE, action) {
       expenses: [...state.expenses, {
         ...action.payload,
         exchangeRates: action.currentCurrency }],
+    };
+  case REMOVE_EXPENDITURE:
+    return {
+      ...state,
+      expenses: action.payload,
     };
   case SAVE_CURRENCIES:
     return {

@@ -37,7 +37,7 @@ const mapStateToProps = (state) => ({
   email: state.user.email,
   expenses: state.wallet.expenses.reduce((acc, curr) => {
     const { currency, value, exchangeRates } = curr;
-    const cota = exchangeRates[currency].ask;
+    const cota = exchangeRates[currency] !== undefined ? exchangeRates[currency].ask : 0;
     const brl = Number(value) * Number(cota);
     return (acc + brl);
   }, 0),

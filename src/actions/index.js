@@ -3,6 +3,7 @@ import fetchApi from '../services/fetchApi';
 export const INPUT_EMAIL = 'INPUT_EMAIL';
 export const SAVE_EXPENDITURE = 'SAVE_EXPENDITURE';
 export const SAVE_CURRENCIES = 'SAVE_CURRENCIES';
+export const REMOVE_EXPENDITURE = 'REMOVE_EXPENDITURE';
 
 export const saveEmail = (payload) => (
   {
@@ -16,6 +17,13 @@ export const addExpenditure = (payload, currentCurrency) => (
     type: SAVE_EXPENDITURE,
     payload,
     currentCurrency,
+  }
+);
+
+export const removeExpenditure = (payload) => (
+  {
+    type: REMOVE_EXPENDITURE,
+    payload,
   }
 );
 
